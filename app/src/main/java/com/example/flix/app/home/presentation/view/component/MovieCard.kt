@@ -31,12 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.flix.R
-import com.example.flix.app.home.data.model.MovieResponse
+import com.example.flix.app.home.data.model.Movie
 import com.example.flix.app.home.presentation.viewmodel.HomeViewModel
 import com.example.flix.core.util.LanguageMapper
 
 @Composable
-fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
+fun MovieCard(movie: Movie, homeViewModel: HomeViewModel) {
 
     Box(
         Modifier
@@ -46,8 +46,8 @@ fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
     ) {
 
         AsyncImage(
-            model = homeViewModel.getImageUrl(movieResponse.posterPath),
-            contentDescription = movieResponse.title,
+            model = homeViewModel.getImageUrl(movie.posterPath),
+            contentDescription = movie.title,
             modifier = Modifier
                 .width(350.dp)
                 .height(200.dp)
@@ -56,13 +56,13 @@ fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
             onError = {
                 Log.e(
                     "HomeScreenContent",
-                    "Error loading image for ${movieResponse.title}: ${it.result.throwable}"
+                    "Error loading image for ${movie.title}: ${it.result.throwable}"
                 )
             },
             onSuccess = {
                 Log.d(
                     "HomeScreenContent",
-                    "Successfully loaded image for ${movieResponse.title}"
+                    "Successfully loaded image for ${movie.title}"
                 )
             }
         )
@@ -75,7 +75,7 @@ fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
         ) {
             Column {
                 Text(
-                    text = movieResponse.title,
+                    text = movie.title,
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -84,12 +84,12 @@ fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
                     modifier = Modifier.width(180.dp)
                 )
                 Text(
-                    text = homeViewModel.getGenreNames(movieResponse),
+                    text = homeViewModel.getGenreNames(movie),
                     color = Color.White,
                     fontSize = 12.sp,
                 )
                 Text(
-                    movieResponse.releaseDate,
+                    movie.releaseDate,
                     color = Color.White,
                     fontSize = 12.sp,
                 )
@@ -102,7 +102,7 @@ fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
                     contentDescription = "Movie Rating"
                 )
                 Text(
-                    String.format("%.1f", movieResponse.voteAverage),
+                    String.format("%.1f", movie.voteAverage),
                     modifier = Modifier.padding(start = 4.dp),
                     color = Color.White,
                     fontWeight = FontWeight.W400
@@ -118,7 +118,7 @@ fun MovieCard(movieResponse: MovieResponse, homeViewModel: HomeViewModel) {
                 .fillMaxSize()
         ) {
             Text(
-                text = LanguageMapper.getLanguageName(movieResponse.originalLanguage),
+                text = LanguageMapper.getLanguageName(movie.originalLanguage),
                 color = Color.White,
                 fontSize = 12.sp,
             )

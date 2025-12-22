@@ -2,6 +2,7 @@ package com.example.flix.app.home.presentation.view.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -57,12 +58,12 @@ fun HomeScreenContent(modifier: Modifier = Modifier) { // Remove the Modifier
                         )
                     }
 
-                } else if (homeViewModel.movieResponses.isNotEmpty()) {
+                } else if (homeViewModel.movieResponse.isNotEmpty()) {
                     // Show actual movies when loaded
-                    items(homeViewModel.movieResponses.size) { count ->
-                        val movie = homeViewModel.movieResponses[count]
+                    items(homeViewModel.movieResponse.size) { count ->
+                        val movie = homeViewModel.movieResponse[count]
                         if (movie.posterPath != null) {
-                            MovieCard(movieResponse = movie, homeViewModel = homeViewModel)
+                            MovieCard(movie = movie, homeViewModel = homeViewModel)
 
                         } else {
                             // Placeholder for movies without poster
@@ -101,7 +102,19 @@ fun HomeScreenContent(modifier: Modifier = Modifier) { // Remove the Modifier
             }
         }
 
-        item { }
+        item {
+            Spacer(Modifier.height(24.dp))
+            LazyRow {
+                items(homeViewModel.genresResponses.genres.size) { count ->
+                    val genre = homeViewModel.genresResponses.genres[count]
+                    Genres(
+                        genre,
+                        isSelected = homeViewModel.selectedGenreId == genre.id,
+                        homeViewModel = homeViewModel
+                    )
+                }
+            }
+        }
 
 
     }

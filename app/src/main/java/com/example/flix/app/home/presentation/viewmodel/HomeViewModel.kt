@@ -7,7 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flix.app.home.core.api_service.RetrofitInstance
-import com.example.flix.app.home.data.model.MovieResponse
+import com.example.flix.app.home.data.model.GenreResponse
+import com.example.flix.app.home.data.model.Movie
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 
@@ -20,13 +21,25 @@ class HomeViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
-    var movieResponses by mutableStateOf<List<MovieResponse>>(emptyList())
+    var genreLoading by mutableStateOf(false)
+        private set
+    var selectedGenreId by mutableStateOf(28)
+        private set
+
+    var movieResponse by mutableStateOf<List<Movie>>(emptyList())
+        private set
+
+    var SearchedGenreResponse by mutableStateOf<List<Movie>>(emptyList())
+        private set
+
+    var genresResponses by mutableStateOf<GenreResponse>(GenreResponse(emptyList()))
         private set
 
     var error by mutableStateOf<String?>(null)
         private set
 
     private var genreMap by mutableStateOf<Map<Int, String>>(emptyMap())
+
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e("HomeViewModel", "Unhandled exception in coroutine", throwable)
@@ -41,6 +54,7 @@ class HomeViewModel : ViewModel() {
             try {
                 loadingGenres()
                 loadPopularMovies()
+                searchByGenre(28)
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Fatal error during initialization", e)
                 error = "Failed to load data: ${e.message}"
@@ -54,9 +68,12 @@ class HomeViewModel : ViewModel() {
         Log.d("HomeViewModel", "Starting to load genres...")
         try {
             val response = RetrofitInstance.movieApi.getMovieGenres()
+            genresResponses = response
+
             Log.d("HomeViewModel", "Genre API response received: $response")
             genreMap = response.genres.associate { it.id to it.name }
             Log.d("HomeViewModel", "Loaded ${genreMap.size} genres: $genreMap")
+
         } catch (e: Exception) {
             Log.e(
                 "HomeViewModel",
@@ -73,8 +90,8 @@ class HomeViewModel : ViewModel() {
         try {
             val response = RetrofitInstance.movieApi.getPopularMovies(1)
             Log.d("HomeViewModel", "Movies API response received: ${response.results.size} results")
-            movieResponses = response.results
-            Log.d("HomeViewModel", "Loaded ${movieResponses.size} movies")
+            movieResponse = response.results
+            Log.d("HomeViewModel", "Loaded ${movieResponse.size} movies")
         } catch (e: Exception) {
             Log.e(
                 "HomeViewModel",
@@ -83,6 +100,33 @@ class HomeViewModel : ViewModel() {
             )
             throw e
         }
+    }
+
+    fun searchByGenre(genreId: Int) {
+        selectedGenreId = genreId
+        Log.d("HomeViewModel", "Starting to search by Genre with ID: $genreId")
+        viewModelScope.launch(exceptionHandler) {
+            genreLoading = true
+            error = null
+            try {
+                val response = RetrofitInstance.movieApi.discoverMovies(genreId)
+                SearchedGenreResponse = response.results
+                Log.d(
+                    "HomeViewModel",
+                    "Genre API response received: ${response.results.size} results"
+                )
+            } catch (e: Exception) {
+                Log.e(
+                    "HomeViewModel",
+                    "Error loading movies by genre: ${e.javaClass.simpleName} - ${e.message}",
+                    e
+                )
+                error = "Failed to load movies for genre: ${e.message}"
+            } finally {
+                genreLoading = false
+            }
+        }
+
     }
 
 
@@ -94,17 +138,17 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun getGenreNames(movieResponse: MovieResponse): String {
+    fun getGenreNames(movie: Movie): String {
         // Try to get genre names from full genre objects first (detail endpoint)
-        if (!movieResponse.genres.isNullOrEmpty()) {
-            return movieResponse.genres
+        if (!movie.genres.isNullOrEmpty()) {
+            return movie.genres
                 .take(3).joinToString(", ") { genreMap[it.id] ?: it.name }
                 .ifEmpty { "Unknown" }
         }
 
         // Otherwise, use genre IDs (popular movies endpoint)
-        if (!movieResponse.genreIds.isNullOrEmpty()) {
-            return movieResponse.genreIds
+        if (!movie.genreIds.isNullOrEmpty()) {
+            return movie.genreIds
                 .take(3)
                 .mapNotNull { genreMap[it] }
                 .joinToString(", ")

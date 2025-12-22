@@ -3,7 +3,7 @@ package com.example.flix.app.home.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class MovieResponse(
+data class Movie(
     val adult: Boolean = false,
     @SerializedName("backdrop_path") val backdropPath: String? = null,
     @SerializedName("belongs_to_collection") val belongsToCollection: BelongsToCollection? = null,
