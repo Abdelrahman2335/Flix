@@ -116,6 +116,11 @@ fun HomeScreenContent(modifier: Modifier = Modifier) { // Remove the Modifier
             }
         }
 
+        items(homeViewModel.SearchedGenreResponse.chunked(2).size) { rowIndex ->
+            GenreMovieGrid(rowIndex, homeViewModel)
+        }
 
     }
+
+
 }
