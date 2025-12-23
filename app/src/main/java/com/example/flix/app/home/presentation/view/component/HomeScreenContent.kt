@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,94 +35,109 @@ fun HomeScreenContent(modifier: Modifier = Modifier) { // Remove the Modifier
     var text by remember { mutableStateOf("") } // Basic State management
 
 
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = modifier
-            .fillMaxSize()
-            .padding(top = 17.dp)
+            .fillMaxSize(),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
-        item { SearchField(text, { text = it }) }
+        item(
+            span = { GridItemSpan(2) },
+            content = {
+                SearchField(text, { text = it })
+            },
+        )
 
 
         // Show shimmer or movies
-        item {
-            LazyRow {
-                // Show shimmer placeholders while loading
-                if (homeViewModel.isLoading) {
-                    items(5) { // Show 5 shimmer placeholders
-                        ShimmerListEffect(
-                            modifier = Modifier
-                                .width(350.dp)
-                                .height(200.dp)
-                                .padding(12.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                        )
-                    }
-
-                } else if (homeViewModel.movieResponse.isNotEmpty()) {
-                    // Show actual movies when loaded
-                    items(homeViewModel.movieResponse.size) { count ->
-                        val movie = homeViewModel.movieResponse[count]
-                        if (movie.posterPath != null) {
-                            MovieCard(movie = movie, homeViewModel = homeViewModel)
-
-                        } else {
-                            // Placeholder for movies without poster
-                            Box(
+        item(
+            span = { GridItemSpan(2) },
+            content = {
+                LazyRow {
+                    // Show shimmer placeholders while loading
+                    if (homeViewModel.isLoading) {
+                        items(5) { // Show 5 shimmer placeholders
+                            ShimmerListEffect(
                                 modifier = Modifier
-                                    .width(300.dp)
+                                    .width(350.dp)
                                     .height(200.dp)
-                                    .padding(16.dp)
+                                    .padding(12.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color.Gray),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = movie.title, color = Color.White)
-                            }
+                            )
                         }
 
+                    } else if (homeViewModel.movieResponse.isNotEmpty()) {
+                        // Show actual movies when loaded
+                        items(homeViewModel.movieResponse.size) { count ->
+                            val movie = homeViewModel.movieResponse[count]
+                            if (movie.posterPath != null) {
+                                MovieCard(movie = movie, homeViewModel = homeViewModel)
+
+                            } else {
+                                // Placeholder for movies without poster
+                                Box(
+                                    modifier = Modifier
+                                        .width(300.dp)
+                                        .height(200.dp)
+                                        .padding(16.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color.Gray),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = movie.title, color = Color.White)
+                                }
+                            }
+
+                        }
                     }
                 }
             }
-        }
+        )
 
         // Show error message
         if (homeViewModel.error != null) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 100.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Error: ${homeViewModel.error}",
-                        color = Color.Red
-                    )
-                }
-            }
+            item(
+                span = { GridItemSpan(2) },
+                content = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Error: ${homeViewModel.error}",
+                            color = Color.Red
+                        )
+                    }
+                },
+            )
         }
 
-        item {
-            Spacer(Modifier.height(24.dp))
-            LazyRow {
-                items(homeViewModel.genresResponses.genres.size) { count ->
-                    val genre = homeViewModel.genresResponses.genres[count]
-                    Genres(
-                        genre,
-                        isSelected = homeViewModel.selectedGenreId == genre.id,
-                        homeViewModel = homeViewModel
-                    )
+        item(
+            span = { GridItemSpan(2) },
+            content = {
+                Spacer(Modifier.height(24.dp))
+                LazyRow {
+                    items(homeViewModel.genresResponses.genres.size) { count ->
+                        val genre = homeViewModel.genresResponses.genres[count]
+                        Genres(
+                            genre,
+                            isSelected = homeViewModel.selectedGenreId == genre.id,
+                            homeViewModel = homeViewModel
+                        )
+                    }
                 }
-            }
-        }
+            },
+        )
 
-        items(homeViewModel.SearchedGenreResponse.chunked(2).size) { rowIndex ->
-            GenreMovieGrid(rowIndex, homeViewModel)
+        items(homeViewModel.SearchedGenreResponse.size) {
+            val movie = homeViewModel.SearchedGenreResponse[it]
+            GenreMovieGrid(movie, homeViewModel)
         }
 
     }
 
-
 }
+
