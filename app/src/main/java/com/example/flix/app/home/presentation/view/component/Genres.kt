@@ -11,16 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.flix.app.home.data.model.Genre
 import com.example.flix.app.home.presentation.viewmodel.HomeViewModel
 
-//@Preview(showBackground = true, backgroundColor = 0xFF1F1F29)
 @Composable
-fun Genres(
-    genre: Genre,
-    isSelected: Boolean,
-    homeViewModel: HomeViewModel
-) {
+fun Genres(genre: Genre, isSelected: Boolean) {
+
+    val homeViewModel = hiltViewModel<HomeViewModel>()
+
     Button(
         modifier = Modifier
             .padding(9.dp),

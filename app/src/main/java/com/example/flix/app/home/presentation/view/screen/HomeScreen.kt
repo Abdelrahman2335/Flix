@@ -5,14 +5,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.flix.app.home.presentation.view.component.Appbar
 import com.example.flix.app.home.presentation.view.component.HomeScreenContent
 
-@Preview
 @Composable
 fun HomeScreen() {
-
+    // Create ViewModel using Hilt - this will be the single instance
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -20,7 +18,9 @@ fun HomeScreen() {
         topBar = { Appbar() },
 
         ) { innerPadding ->
-        HomeScreenContent(Modifier.padding(innerPadding))
+        HomeScreenContent(
+            modifier = Modifier.padding(innerPadding),
+        )
 
     }
 }

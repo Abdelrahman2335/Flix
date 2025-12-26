@@ -1,7 +1,6 @@
 package com.example.flix.app.home.presentation.view.component
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,19 +23,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.flix.R
-import com.example.flix.app.home.data.model.Movie
 import com.example.flix.app.home.presentation.viewmodel.HomeViewModel
 import com.example.flix.core.util.LanguageMapper
+import com.example.flix.core.util.getImageUrl
 
 @Composable
-fun MovieCard(movie: Movie, homeViewModel: HomeViewModel) {
+fun MovieCard(count: Int) {
+    val homeViewModel = hiltViewModel<HomeViewModel>()
+
+    val movie = homeViewModel.movieResponse[count]
+
 
     Box(
         Modifier
@@ -46,7 +48,7 @@ fun MovieCard(movie: Movie, homeViewModel: HomeViewModel) {
     ) {
 
         AsyncImage(
-            model = homeViewModel.getImageUrl(movie.posterPath),
+            model = getImageUrl(movie.posterPath),
             contentDescription = movie.title,
             modifier = Modifier
                 .width(350.dp)
@@ -94,20 +96,7 @@ fun MovieCard(movie: Movie, homeViewModel: HomeViewModel) {
                     fontSize = 12.sp,
                 )
             }
-            Row {
-                Image(
-                    modifier = Modifier.padding(top = 2.dp),
-                    painter =
-                        painterResource(R.drawable.ic_star),
-                    contentDescription = "Movie Rating"
-                )
-                Text(
-                    String.format("%.1f", movie.voteAverage),
-                    modifier = Modifier.padding(start = 4.dp),
-                    color = Color.White,
-                    fontWeight = FontWeight.W400
-                )
-            }
+            RatingCompose(movie.voteAverage, FontWeight.W400)
 
         }
         Row(

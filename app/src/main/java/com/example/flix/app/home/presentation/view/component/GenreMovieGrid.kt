@@ -19,13 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.flix.app.home.data.model.Movie
-import com.example.flix.app.home.presentation.viewmodel.HomeViewModel
+import com.example.flix.core.util.getImageUrl
 
 @Composable
-fun GenreMovieGrid(
-    movie: Movie,
-    homeViewModel: HomeViewModel
-) {
+fun GenreMovieGrid(movie: Movie) {
 
 
     Column(
@@ -33,7 +30,7 @@ fun GenreMovieGrid(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
     ) {
         AsyncImage(
-            model = homeViewModel.getImageUrl(movie.posterPath),
+            model = getImageUrl(movie.posterPath),
             contentDescription = movie.title,
             modifier = Modifier
                 .height(217.dp)
@@ -61,7 +58,6 @@ fun GenreMovieGrid(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
         )
     }
 }

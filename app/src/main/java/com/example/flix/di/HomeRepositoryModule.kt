@@ -1,0 +1,20 @@
+package com.example.flix.di
+
+import com.example.flix.app.home.data.repository.HomeRepositoryImpl
+import com.example.flix.app.home.domain.repository.HomeRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class HomeRepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindHomeRepository(
+        homeRepositoryImpl: HomeRepositoryImpl
+    ): HomeRepository
+}
