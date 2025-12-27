@@ -1,6 +1,7 @@
 package com.example.flix.app.home.presentation.view.component
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,15 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.flix.app.home.presentation.viewmodel.HomeViewModel
+import com.example.flix.app.home.presentation.view_model.HomeViewModel
 import com.example.flix.core.util.LanguageMapper
 import com.example.flix.core.util.getImageUrl
 
 @Composable
-fun MovieCard(count: Int) {
+fun MovieCard(
+    count: Int,
+    onMovieClick: (Int) -> Unit
+) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
 
-    val movie = homeViewModel.movieResponse[count]
+    val movie = homeViewModel.popularMovieResponse[count]
 
 
     Box(
@@ -45,6 +49,7 @@ fun MovieCard(count: Int) {
             .width(350.dp)
             .height(200.dp)
             .padding(16.dp)
+            .clickable(onClick = { onMovieClick(movie.id) })
     ) {
 
         AsyncImage(

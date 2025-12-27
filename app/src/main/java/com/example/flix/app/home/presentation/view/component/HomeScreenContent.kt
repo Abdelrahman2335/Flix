@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,13 +25,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.flix.app.home.presentation.viewmodel.HomeViewModel
+import com.example.flix.app.home.presentation.view_model.HomeViewModel
+import com.example.flix.core.util.shimmerEffect
 
 
 //@Preview(showBackground = true, backgroundColor = 0xFF1F1F29)
 @Composable
 fun HomeScreenContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onMovieClick: (Int) -> Unit
 ) {
 
     val homeViewModel = hiltViewModel<HomeViewModel>()
@@ -44,37 +47,46 @@ fun HomeScreenContent(
             .fillMaxSize(),
     ) {
 
+
         item(
             span = { GridItemSpan(2) },
             content = {
                 SearchField(text, { text = it })
             },
         )
+        // Show shimmer placeholders while loading
 
-
-        item(
-            span = { GridItemSpan(2) },
-            content = {
+        if (homeViewModel.isLoading) {
+            item(
+                span = { GridItemSpan(2) }
+            ) {
                 LazyRow {
-                    // Show shimmer placeholders while loading
-                    if (homeViewModel.isLoading) {   // Show shimmer or movies
 
-                        items(5) { // Show 5 shimmer placeholders
-                            ShimmerListEffect(
-                                modifier = Modifier
-                                    .width(350.dp)
-                                    .height(200.dp)
-                                    .padding(12.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                            )
-                        }
+                    items(5) { // Show 5 shimmer placeholders
+                        Box(
+                            modifier = Modifier
+                                .size(350.dp, 200.dp)
+                                .padding(12.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .shimmerEffect(),
+                        )
+                    }
+                }
+            }
+        } else if (homeViewModel.popularMovieResponse.isNotEmpty() && !homeViewModel.isLoading) {
 
-                    } else if (homeViewModel.movieResponse.isNotEmpty()) {
+            item(
+                span = { GridItemSpan(2) },
+                content = {
+                    LazyRow {
                         // Show actual movies when loaded
-                        items(homeViewModel.movieResponse.size) { count ->
-                            val movie = homeViewModel.movieResponse[count]
+                        items(homeViewModel.popularMovieResponse.size) { count ->
+                            val movie = homeViewModel.popularMovieResponse[count]
                             if (movie.posterPath != null) {
-                                MovieCard(count = count)
+                                MovieCard(
+                                    count = count,
+                                    onMovieClick = onMovieClick
+                                )
 
                             } else {
                                 // Placeholder for movies without poster
@@ -92,10 +104,33 @@ fun HomeScreenContent(
                             }
 
                         }
+
                     }
                 }
+            )
+
+
+            item(
+                span = { GridItemSpan(2) },
+                content = {
+                    Spacer(Modifier.height(24.dp))
+                    LazyRow {
+                        items(homeViewModel.genresResponses.genres.size) { count ->
+                            val genre = homeViewModel.genresResponses.genres[count]
+                            Genres(genre, isSelected = homeViewModel.selectedGenreId == genre.id)
+                        }
+                    }
+                },
+            )
+
+            items(homeViewModel.searchedGenreResponse.size) {
+                val movie = homeViewModel.searchedGenreResponse[it]
+                GenreMovieGrid(
+                    movie,
+                    onMovieClick = onMovieClick
+                )
             }
-        )
+        }
 
         // Show error message
         if (homeViewModel.error != null) {
@@ -115,24 +150,6 @@ fun HomeScreenContent(
                     }
                 },
             )
-        }
-
-        item(
-            span = { GridItemSpan(2) },
-            content = {
-                Spacer(Modifier.height(24.dp))
-                LazyRow {
-                    items(homeViewModel.genresResponses.genres.size) { count ->
-                        val genre = homeViewModel.genresResponses.genres[count]
-                        Genres(genre, isSelected = homeViewModel.selectedGenreId == genre.id)
-                    }
-                }
-            },
-        )
-
-        items(homeViewModel.searchedGenreResponse.size) {
-            val movie = homeViewModel.searchedGenreResponse[it]
-            GenreMovieGrid(movie, homeViewModel)
         }
     }
 }

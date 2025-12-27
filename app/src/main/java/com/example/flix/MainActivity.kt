@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.flix.app.home.presentation.view.screen.HomeScreen
 import com.example.flix.ui.theme.FlixTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +17,7 @@ class MainActivity : ComponentActivity() {
                 darkTheme = true,
                 dynamicColor = false
             ) {
-                HomeScreen()
+                AppNavigation()
 
             }
         }

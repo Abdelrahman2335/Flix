@@ -1,6 +1,7 @@
 package com.example.flix.app.home.presentation.view.component
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,20 +19,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.flix.app.home.data.model.Movie
+import com.example.flix.app.home.data.model.PopularMovie
 import com.example.flix.core.util.getImageUrl
 
 @Composable
-fun GenreMovieGrid(movie: Movie) {
+fun GenreMovieGrid(popularMovie: PopularMovie, onMovieClick: (Int) -> Unit) {
 
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 16.dp)
+            .clickable(onClick = { onMovieClick(popularMovie.id) })
+
     ) {
         AsyncImage(
-            model = getImageUrl(movie.posterPath),
-            contentDescription = movie.title,
+            model = getImageUrl(popularMovie.posterPath),
+            contentDescription = popularMovie.title,
             modifier = Modifier
                 .height(217.dp)
                 .clip(RoundedCornerShape(12.dp)),
@@ -39,20 +43,20 @@ fun GenreMovieGrid(movie: Movie) {
             onError = {
                 Log.e(
                     "HomeScreenContent",
-                    "Error loading image for ${movie.title}: ${it.result.throwable}"
+                    "Error loading image for ${popularMovie.title}: ${it.result.throwable}"
                 )
             },
             onSuccess = {
                 Log.d(
                     "HomeScreenContent",
-                    "Successfully loaded image for ${movie.title}"
+                    "Successfully loaded image for ${popularMovie.title}"
                 )
             }
         )
 
         Text(
             textAlign = TextAlign.Center,
-            text = movie.title,
+            text = popularMovie.title,
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,

@@ -11,14 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.flix.app.home.data.model.Movie
 import com.example.flix.app.home.presentation.view.component.RatingCompose
+import com.example.flix.app.movie.data.model.movie.MovieModel
 
 @Composable
 fun MovieTags(
-    movie: Movie,
-    genre: String
+    movie: MovieModel,
 ) {
+    val genre = movie.genres.get(index = 0).name
     Row {
         if (movie.adult)
             Button(

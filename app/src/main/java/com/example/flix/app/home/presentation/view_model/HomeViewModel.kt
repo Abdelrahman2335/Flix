@@ -1,4 +1,4 @@
-package com.example.flix.app.home.presentation.viewmodel
+package com.example.flix.app.home.presentation.view_model
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flix.app.home.data.model.GenreResponse
-import com.example.flix.app.home.data.model.Movie
+import com.example.flix.app.home.data.model.PopularMovie
 import com.example.flix.app.home.domain.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -32,10 +32,10 @@ class HomeViewModel @Inject constructor(
     var selectedGenreId by mutableIntStateOf(28)
         private set
 
-    var movieResponse by mutableStateOf<List<Movie>>(emptyList())
+    var popularMovieResponse by mutableStateOf<List<PopularMovie>>(emptyList())
         private set
 
-    var searchedGenreResponse by mutableStateOf<List<Movie>>(emptyList())
+    var searchedGenreResponse by mutableStateOf<List<PopularMovie>>(emptyList())
         private set
 
     var genresResponses by mutableStateOf<GenreResponse>(GenreResponse(emptyList()))
@@ -96,8 +96,8 @@ class HomeViewModel @Inject constructor(
         try {
             val response = repository.getPopularMovies(1)
             Log.d("HomeViewModel", "Movies API response received: ${response.results.size} results")
-            movieResponse = response.results
-            Log.d("HomeViewModel", "Loaded ${movieResponse.size} movies")
+            popularMovieResponse = response.results
+            Log.d("HomeViewModel", "Loaded ${popularMovieResponse.size} movies")
         } catch (e: Exception) {
             Log.e(
                 "HomeViewModel",
@@ -136,17 +136,17 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun getGenreNames(movie: Movie): String {
+    fun getGenreNames(popularMovie: PopularMovie): String {
         // Try to get genre names from full genre objects first (detail endpoint)
-        if (!movie.genres.isNullOrEmpty()) {
-            return movie.genres
+        if (!popularMovie.genres.isNullOrEmpty()) {
+            return popularMovie.genres
                 .take(3).joinToString(", ") { genreMap[it.id] ?: it.name }
                 .ifEmpty { "Unknown" }
         }
 
         // Otherwise, use genre IDs (popular movies endpoint)
-        if (!movie.genreIds.isNullOrEmpty()) {
-            return movie.genreIds
+        if (!popularMovie.genreIds.isNullOrEmpty()) {
+            return popularMovie.genreIds
                 .take(3)
                 .mapNotNull { genreMap[it] }
                 .joinToString(", ")

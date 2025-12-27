@@ -1,9 +1,12 @@
 package com.example.flix.app.home.data.model
 
-
+import com.example.flix.core.data.model.Genre
+import com.example.flix.core.data.model.ProductionCompany
+import com.example.flix.core.data.model.ProductionCountry
+import com.example.flix.core.data.model.SpokenLanguage
 import com.google.gson.annotations.SerializedName
 
-data class Movie(
+data class PopularMovie(
     val adult: Boolean = false,
     @SerializedName("backdrop_path") val backdropPath: String? = null,
     @SerializedName("belongs_to_collection") val belongsToCollection: BelongsToCollection? = null,
@@ -38,27 +41,4 @@ data class BelongsToCollection(
     val id: Int,
     val name: String = "",
     @SerializedName("poster_path") val posterPath: String? = null
-)
-
-data class Genre(
-    val id: Int,
-    val name: String = ""
-)
-
-data class ProductionCompany(
-    val id: Int,
-    @SerializedName("logo_path") val logoPath: String? = null,
-    val name: String = "",
-    @SerializedName("origin_country") val originCountry: String = ""
-)
-
-data class ProductionCountry(
-    @SerializedName("iso_3166_1") val iso31661: String = "",
-    val name: String = ""
-)
-
-data class SpokenLanguage(
-    @SerializedName("english_name") val englishName: String = "",
-    @SerializedName("iso_639_1") val iso6391: String = "",
-    val name: String = ""
 )
