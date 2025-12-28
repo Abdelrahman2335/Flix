@@ -10,19 +10,20 @@ import com.example.flix.app.home.presentation.view.component.HomeScreenContent
 
 @Composable
 fun HomeScreen(
-    onMovieClick: (Int) -> Unit
+    onMovieClick: (Int) -> Unit,
+    onSearchClick: () -> Unit
 ) {
     // Create ViewModel using Hilt - this will be the single instance
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
 
-        topBar = { Appbar() },
+        topBar = { Appbar({ onSearchClick() }) },
 
         ) { innerPadding ->
         HomeScreenContent(
             modifier = Modifier.padding(innerPadding),
-            onMovieClick = onMovieClick
+            onMovieClick = onMovieClick,
         )
 
     }

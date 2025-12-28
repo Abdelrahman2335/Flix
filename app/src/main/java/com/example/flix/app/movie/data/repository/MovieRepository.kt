@@ -1,4 +1,4 @@
-package com.example.flix.app.movie.domin.repository
+package com.example.flix.app.movie.data.repository
 
 import com.example.flix.app.movie.data.model.cast.CastResponse
 import com.example.flix.app.movie.data.model.movie.MovieModel
@@ -9,4 +9,3 @@ interface MovieRepository {
     suspend fun getMovieTrailer(id: Int): MovieMediaResponse
     suspend fun getCast(id: Int): CastResponse
 }
-

@@ -1,8 +1,9 @@
 package com.example.flix.di
 
 import com.example.flix.BuildConfig
-import com.example.flix.core.api_service.MovieApi
-import com.example.flix.core.api_service.MovieDetailsApi
+import com.example.flix.app.home.data.api.MovieApi
+import com.example.flix.app.movie.data.api.MovieDetailsApi
+import com.example.flix.app.search.data.api.SearchApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,6 +57,12 @@ object NetworkModule {
     @Singleton
     fun provideMovieDetailsApi(retrofit: Retrofit): MovieDetailsApi {
         return retrofit.create(MovieDetailsApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchApi(retrofit: Retrofit): SearchApi {
+        return retrofit.create(SearchApi::class.java)
     }
 }
 

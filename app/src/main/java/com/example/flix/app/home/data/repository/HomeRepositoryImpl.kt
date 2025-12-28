@@ -1,9 +1,8 @@
 package com.example.flix.app.home.data.repository
 
+import com.example.flix.app.home.data.api.MovieApi
 import com.example.flix.app.home.data.model.GenreResponse
 import com.example.flix.app.home.data.model.PopularMoviesResponse
-import com.example.flix.app.home.domain.repository.HomeRepository
-import com.example.flix.core.api_service.MovieApi
 import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(

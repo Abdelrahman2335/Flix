@@ -1,10 +1,9 @@
-package com.example.flix.core.api_service
+package com.example.flix.app.home.data.api
 
 import com.example.flix.app.home.data.model.GenreResponse
 import com.example.flix.app.home.data.model.PopularMoviesResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
-
 
 interface MovieApi {
 

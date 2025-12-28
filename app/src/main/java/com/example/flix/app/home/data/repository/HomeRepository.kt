@@ -1,4 +1,4 @@
-package com.example.flix.app.home.domain.repository
+package com.example.flix.app.home.data.repository
 
 import com.example.flix.app.home.data.model.GenreResponse
 import com.example.flix.app.home.data.model.PopularMoviesResponse
@@ -8,4 +8,3 @@ interface HomeRepository {
     suspend fun getMovieGenres(): GenreResponse
     suspend fun discoverMovies(genreId: Int): PopularMoviesResponse
 }
-

@@ -1,4 +1,4 @@
-package com.example.flix.core.api_service
+package com.example.flix.app.movie.data.api
 
 import com.example.flix.app.movie.data.model.cast.CastResponse
 import com.example.flix.app.movie.data.model.movie.MovieModel

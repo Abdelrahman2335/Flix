@@ -11,7 +11,7 @@ import androidx.navigation.toRoute
 import com.example.flix.Movie
 import com.example.flix.app.movie.data.model.cast.Cast
 import com.example.flix.app.movie.data.model.movie.MovieModel
-import com.example.flix.app.movie.domin.repository.MovieRepository
+import com.example.flix.app.movie.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

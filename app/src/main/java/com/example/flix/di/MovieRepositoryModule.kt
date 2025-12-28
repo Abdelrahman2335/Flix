@@ -1,7 +1,7 @@
 package com.example.flix.di
 
+import com.example.flix.app.movie.data.repository.MovieRepository
 import com.example.flix.app.movie.data.repository.MovieRepositoryImpl
-import com.example.flix.app.movie.domin.repository.MovieRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

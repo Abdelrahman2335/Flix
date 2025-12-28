@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flix.app.home.data.model.GenreResponse
 import com.example.flix.app.home.data.model.PopularMovie
-import com.example.flix.app.home.domain.repository.HomeRepository
+import com.example.flix.app.home.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
