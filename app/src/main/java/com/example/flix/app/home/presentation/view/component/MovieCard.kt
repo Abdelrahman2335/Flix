@@ -19,6 +19,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +42,9 @@ fun MovieCard(
     onMovieClick: (Int) -> Unit
 ) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val uiState by homeViewModel.uiState.collectAsState()
 
-    val movie = homeViewModel.popularMovieResponse[count]
+    val movie = uiState.popularMovies[count]
 
 
     Box(

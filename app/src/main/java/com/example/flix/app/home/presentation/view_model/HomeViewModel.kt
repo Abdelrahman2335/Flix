@@ -1,17 +1,16 @@
 package com.example.flix.app.home.presentation.view_model
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flix.app.home.data.model.GenreResponse
 import com.example.flix.app.home.data.model.PopularMovie
 import com.example.flix.app.home.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,53 +19,44 @@ class HomeViewModel @Inject constructor(
     private val repository: HomeRepository
 ) : ViewModel() {
 
-    init {
-        Log.d("HomeViewModel", "ViewModel created")
-    }
 
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var genreLoading by mutableStateOf(false)
-        private set
-    var selectedGenreId by mutableIntStateOf(28)
-        private set
-
-    var popularMovieResponse by mutableStateOf<List<PopularMovie>>(emptyList())
-        private set
-
-    var searchedGenreResponse by mutableStateOf<List<PopularMovie>>(emptyList())
-        private set
-
-    var genresResponses by mutableStateOf<GenreResponse>(GenreResponse(emptyList()))
-        private set
-
-    var error by mutableStateOf<String?>(null)
-        private set
-
-    private var genreMap by mutableStateOf<Map<Int, String>>(emptyMap())
-
-
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e("HomeViewModel", "Unhandled exception in coroutine", throwable)
-        error = "Error: ${throwable.message}"
-        isLoading = false
+        _uiState.update {
+            it.copy(error = "Error: ${throwable.message}")
+        }
+
+        _uiState.update { it.copy(isLoading = false) }
+
+
     }
 
     init {
         viewModelScope.launch(exceptionHandler) {
-            isLoading = true
-            error = null
+            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update {
+                it.copy(error = null)
+            }
             try {
                 loadingGenres()
                 loadPopularMovies()
                 searchByGenre(28)
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Fatal error during initialization", e)
-                error = "Failed to load data: ${e.message}"
+                _uiState.update {
+                    it.copy(error = "Error: ${e.message}")
+                }
             } finally {
-                isLoading = false
+                _uiState.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    fun onEvent(event: HomeUiEvent) {
+        when (event) {
+            is HomeUiEvent.SearchByGenre -> searchByGenre(event.genreId)
         }
     }
 
@@ -74,11 +64,14 @@ class HomeViewModel @Inject constructor(
         Log.d("HomeViewModel", "Starting to load genres...")
         try {
             val response = repository.getMovieGenres()
-            genresResponses = response
+            _uiState.update { it.copy(genres = response) }
 
             Log.d("HomeViewModel", "Genre API response received: $response")
-            genreMap = response.genres.associate { it.id to it.name }
-            Log.d("HomeViewModel", "Loaded ${genreMap.size} genres: $genreMap")
+            _uiState.update { state -> state.copy(genreMap = response.genres.associate { it.id to it.name }) }
+            Log.d(
+                "HomeViewModel",
+                "Loaded ${_uiState.value.genreMap.size} genres: ${_uiState.value.genreMap}"
+            )
 
         } catch (e: Exception) {
             Log.e(
@@ -96,8 +89,8 @@ class HomeViewModel @Inject constructor(
         try {
             val response = repository.getPopularMovies(1)
             Log.d("HomeViewModel", "Movies API response received: ${response.results.size} results")
-            popularMovieResponse = response.results
-            Log.d("HomeViewModel", "Loaded ${popularMovieResponse.size} movies")
+            _uiState.update { it.copy(popularMovies = response.results) }
+            Log.d("HomeViewModel", "Loaded ${_uiState.value.popularMovies.size} movies")
         } catch (e: Exception) {
             Log.e(
                 "HomeViewModel",
@@ -109,14 +102,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun searchByGenre(genreId: Int) {
-        selectedGenreId = genreId
+        _uiState.update { it.copy(selectedGenreId = genreId) }
         Log.d("HomeViewModel", "Starting to search by Genre with ID: $genreId")
         viewModelScope.launch(exceptionHandler) {
-            genreLoading = true
-            error = null
+            _uiState.update { it.copy(genreLoading = true, error = null) }
             try {
                 val response = repository.discoverMovies(genreId)
-                searchedGenreResponse = response.results
+                _uiState.update { it.copy(searchedGenreMovies = response.results) }
                 Log.d(
                     "HomeViewModel",
                     "Genre API response received: ${response.results.size} results"
@@ -127,9 +119,9 @@ class HomeViewModel @Inject constructor(
                     "Error loading movies by genre: ${e.javaClass.simpleName} - ${e.message}",
                     e
                 )
-                error = "Failed to load movies for genre: ${e.message}"
+                _uiState.update { it.copy(error = "Failed to load movies for genre: ${e.message}") }
             } finally {
-                genreLoading = false
+                _uiState.update { it.copy(genreLoading = false) }
             }
         }
 
@@ -137,6 +129,7 @@ class HomeViewModel @Inject constructor(
 
 
     fun getGenreNames(popularMovie: PopularMovie): String {
+        val genreMap = _uiState.value.genreMap
         // Try to get genre names from full genre objects first (detail endpoint)
         if (!popularMovie.genres.isNullOrEmpty()) {
             return popularMovie.genres
@@ -156,4 +149,3 @@ class HomeViewModel @Inject constructor(
         return "No genres"
     }
 }
-

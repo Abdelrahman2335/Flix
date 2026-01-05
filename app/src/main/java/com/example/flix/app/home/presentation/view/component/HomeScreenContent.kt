@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +36,7 @@ fun HomeScreenContent(
     ) {
 
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val uiState by homeViewModel.uiState.collectAsState()
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -43,7 +46,7 @@ fun HomeScreenContent(
 
         // Show shimmer placeholders while loading
 
-        if (homeViewModel.isLoading) {
+        if (uiState.isLoading) {
             item(
                 span = { GridItemSpan(2) }
             ) {
@@ -60,15 +63,15 @@ fun HomeScreenContent(
                     }
                 }
             }
-        } else if (homeViewModel.popularMovieResponse.isNotEmpty() && !homeViewModel.isLoading) {
+        } else if (uiState.popularMovies.isNotEmpty()) {
 
             item(
                 span = { GridItemSpan(2) },
                 content = {
                     LazyRow {
                         // Show actual movies when loaded
-                        items(homeViewModel.popularMovieResponse.size) { count ->
-                            val movie = homeViewModel.popularMovieResponse[count]
+                        items(uiState.popularMovies.size) { count ->
+                            val movie = uiState.popularMovies[count]
                             if (movie.posterPath != null) {
                                 MovieCard(
                                     count = count,
@@ -102,16 +105,16 @@ fun HomeScreenContent(
                 content = {
                     Spacer(Modifier.height(24.dp))
                     LazyRow {
-                        items(homeViewModel.genresResponses.genres.size) { count ->
-                            val genre = homeViewModel.genresResponses.genres[count]
-                            Genres(genre, isSelected = homeViewModel.selectedGenreId == genre.id)
+                        items(uiState.genres.genres.size) { count ->
+                            val genre = uiState.genres.genres[count]
+                            Genres(genre, isSelected = uiState.selectedGenreId == genre.id)
                         }
                     }
                 },
             )
 
-            items(homeViewModel.searchedGenreResponse.size) {
-                val movie = homeViewModel.searchedGenreResponse[it]
+            items(uiState.searchedGenreMovies.size) {
+                val movie = uiState.searchedGenreMovies[it]
                 GenreMovieGrid(
                     movie,
                     onMovieClick = onMovieClick
@@ -120,7 +123,7 @@ fun HomeScreenContent(
         }
 
         // Show error message
-        if (homeViewModel.error != null) {
+        if (uiState.error != null) {
             item(
                 span = { GridItemSpan(2) },
                 content = {
@@ -131,7 +134,7 @@ fun HomeScreenContent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Error: ${homeViewModel.error}",
+                            text = "Error: ${uiState.error}",
                             color = Color.Red
                         )
                     }

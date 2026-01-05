@@ -1,4 +1,4 @@
-package com.example.flix.ui.theme
+package com.example.flix.core.theme
 
 import androidx.compose.ui.graphics.Color
 

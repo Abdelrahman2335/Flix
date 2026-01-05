@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.flix.app.home.presentation.view_model.HomeUiEvent
 import com.example.flix.app.home.presentation.view_model.HomeViewModel
 import com.example.flix.core.data.model.Genre
 
@@ -35,7 +36,7 @@ fun Genres(genre: Genre, isSelected: Boolean) {
             disabledContentColor = MaterialTheme.colorScheme.primary
         ),
         onClick = {
-            homeViewModel.searchByGenre(genre.id)
+            homeViewModel.onEvent(HomeUiEvent.SearchByGenre(genre.id))
         }
     ) {
         Text(genre.name, fontWeight = FontWeight.W500)

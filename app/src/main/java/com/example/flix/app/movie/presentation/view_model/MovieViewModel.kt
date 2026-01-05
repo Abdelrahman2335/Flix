@@ -8,10 +8,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.example.flix.Movie
 import com.example.flix.app.movie.data.model.cast.Cast
 import com.example.flix.app.movie.data.model.movie.MovieModel
 import com.example.flix.app.movie.data.repository.MovieRepository
+import com.example.flix.core.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
