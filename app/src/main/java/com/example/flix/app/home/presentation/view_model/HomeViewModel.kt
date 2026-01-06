@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flix.app.home.data.model.PopularMovie
 import com.example.flix.app.home.data.repository.HomeRepository
+import com.example.flix.app.home.presentation.event.HomeUiEvent
+import com.example.flix.app.home.presentation.state.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,9 +28,11 @@ import com.example.flix.core.util.getImageUrl
 fun MovieScreenContent(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
     val movieViewModel = hiltViewModel<MovieViewModel>()
-    val movie: MovieModel? = movieViewModel.movie
-    val isLoading = movieViewModel.isLoading
-    val error = movieViewModel.error
+    val uiState by movieViewModel.uiState.collectAsState()
+
+    val movie: MovieModel? = uiState.movie
+    val isLoading = uiState.isLoading
+    val error = uiState.error
 
     if (isLoading) {
         MovieLoadingScreen()
@@ -41,7 +45,7 @@ fun MovieScreenContent(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Error: ${movieViewModel.error}",
+                text = "Error: $error",
                 color = Color.Red
             )
         }
@@ -67,7 +71,7 @@ fun MovieScreenContent(modifier: Modifier = Modifier) {
 
             MovieTags(movie = movie)
             MovieInfoSection(movie.title, movie.overview)
-            CastSection(movieViewModel.cast)
+            CastSection(uiState.cast)
         }
     }
 

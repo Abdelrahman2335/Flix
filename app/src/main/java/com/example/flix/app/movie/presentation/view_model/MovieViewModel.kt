@@ -1,18 +1,18 @@
 package com.example.flix.app.movie.presentation.view_model
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.example.flix.app.movie.data.model.cast.Cast
-import com.example.flix.app.movie.data.model.movie.MovieModel
 import com.example.flix.app.movie.data.repository.MovieRepository
+import com.example.flix.app.movie.presentation.state.MovieUiState
 import com.example.flix.core.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,31 +24,21 @@ class MovieViewModel @Inject constructor(
 ) : ViewModel() {
     private val movieId: Int = savedStateHandle.toRoute<Movie>().movieId
 
-    var isLoading by mutableStateOf(false)
-
-    var movie by mutableStateOf<MovieModel?>(null)
-        private set
-
-    var cast by mutableStateOf<List<Cast>>(emptyList())
-        private set
-
-    var error by mutableStateOf<String?>(null)
-        private set
-
+    private val _uiState = MutableStateFlow(MovieUiState())
+    val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            isLoading = true
-            error = null
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 getMovie(movieId)
                 getMovieTrailer(movieId)
                 getCast(movieId)
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Fatal error during initialization", e)
-                error = "Failed to load data: ${e.message}"
+                _uiState.update { it.copy(error = "Failed to load data: ${e.message}") }
             } finally {
-                isLoading = false
+                _uiState.update { it.copy(isLoading = false) }
             }
 
         }
@@ -58,7 +48,7 @@ class MovieViewModel @Inject constructor(
         Log.d("MovieViewModel", "Starting to get Movie: $movieId")
         try {
             val response = repository.getMovieDetails(movieId)
-            movie = response
+            _uiState.update { it.copy(movie = response) }
 
             Log.d("MovieViewModel", "Movie API response received: $response")
 
@@ -94,7 +84,7 @@ class MovieViewModel @Inject constructor(
         Log.d("MovieViewModel", "Starting to load cast...")
         try {
             val response = repository.getCast(id)
-            cast = response.cast
+            _uiState.update { it.copy(cast = response.cast) }
 
             Log.d("MovieViewModel", "Cast API response received: $response")
 

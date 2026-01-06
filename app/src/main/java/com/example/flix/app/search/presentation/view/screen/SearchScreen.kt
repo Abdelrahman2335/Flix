@@ -16,11 +16,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.flix.app.search.presentation.event.SearchUiEvent
 import com.example.flix.app.search.presentation.view.component.SearchField
 import com.example.flix.app.search.presentation.view_model.SearchViewModel
 import com.example.flix.core.util.getImageUrl
@@ -42,15 +40,9 @@ fun SearchScreen(
 ) {
 
     val searchViewModel = hiltViewModel<SearchViewModel>()
-    var query by remember { mutableStateOf("") }
+    val uiState by searchViewModel.uiState.collectAsState()
 
-    // Debounce search to avoid too many API calls
-    LaunchedEffect(query) {
-        if (query.isNotEmpty()) {
-            kotlinx.coroutines.delay(500) // 500ms debounce
-            searchViewModel.searchMovie(query)
-        }
-    }
+    // Remove the LaunchedEffect with debounce since it's now handled in ViewModel
 
     Scaffold(containerColor = Color(0xFF1F1F29)) {
         LazyColumn(
@@ -61,15 +53,15 @@ fun SearchScreen(
         ) {
             item {
                 SearchField(
-                    query = query,
+                    query = uiState.query,
                     onQueryChange = { newQuery ->
-                        query = newQuery
+                        searchViewModel.onEvent(SearchUiEvent.SearchQueryChanged(newQuery))
                     }
                 )
             }
 
             // Loading state
-            if (searchViewModel.isLoading) {
+            if (uiState.isLoading) {
                 item {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -84,7 +76,7 @@ fun SearchScreen(
                 }
             }
             // Empty state (no search yet)
-            else if (query.isEmpty()) {
+            else if (uiState.query.isEmpty()) {
                 item {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -102,7 +94,7 @@ fun SearchScreen(
                 }
             }
             // No results found
-            else if (!searchViewModel.isLoading && searchViewModel.searchResult.isEmpty()) {
+            else if (!uiState.isLoading && uiState.searchResults.isEmpty()) {
                 item {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -133,13 +125,16 @@ fun SearchScreen(
                 }
             }
             // Display results
-            else if (searchViewModel.searchResult.isNotEmpty()) {
-                items(searchViewModel.searchResult.size) { count ->
-                    val movie = searchViewModel.searchResult[count]
+            else if (uiState.searchResults.isNotEmpty()) {
+                items(uiState.searchResults.size) { count ->
+                    val movie = uiState.searchResults[count]
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onMovieClick(movie.id) }
+                            .clickable {
+                                searchViewModel.onEvent(SearchUiEvent.MovieClicked(movie.id))
+                                onMovieClick(movie.id)
+                            }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         Box(

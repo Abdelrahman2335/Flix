@@ -1,4 +1,4 @@
-package com.example.flix.app.home.presentation.view_model
+package com.example.flix.app.home.presentation.event
 
 sealed interface HomeUiEvent {
     data class SearchByGenre(val genreId: Int) : HomeUiEvent
