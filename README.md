@@ -98,6 +98,109 @@ implemented, with more features coming soon.
 - Video playback
 - User authentication
 
+---
+
+## 🔧 Bug Fixes & Improvements
+
+### Search Functionality Fix Summary
+
+#### Issues Fixed
+
+1. **Search Not Working**
+    - **Problem**: SearchField was creating its own ViewModel instance instead of sharing with
+      SearchScreen
+    - **Solution**: Modified SearchField to accept `query` and `onQueryChange` parameters, removing
+      the internal ViewModel instance
+
+2. **Missing UI States**
+    - **Added Loading State**: Shows CircularProgressIndicator when `isLoading` is true
+    - **Added Empty State**: Shows "Search for a movie!" when query is empty
+    - **Added No Results State**: Shows "No results found" with helper text when search returns no
+      results
+
+3. **API Endpoint Fix**
+    - **Changed**: `/search/movie` → `search/movie` (removed leading slash)
+    - **Reason**: The base URL already includes the version path, leading slash causes double path
+
+4. **Data Model Improvements**
+    - Made `poster_path` and `backdrop_path` nullable in Result model
+    - Added null handling for poster images in UI
+
+5. **Performance Optimization**
+    - Added 500ms debouncing to search using LaunchedEffect
+    - Prevents excessive API calls while user is typing
+
+6. **Navigation Issue Fix**
+    - **Problem**: Rapidly pressing the back button multiple times caused white screen
+    - **Solution**: Added click debouncing and state management in MovieScreen
+    - Prevents multiple navigation events from being triggered simultaneously
+    - Added `isNavigating` state flag with 500ms cooldown period
+
+#### Files Modified
+
+1. **SearchScreen.kt**
+    - Added query state management with `remember { mutableStateOf("") }`
+    - Added LaunchedEffect for debouncing
+    - Implemented proper UI states (loading, empty, no results, results)
+    - Added null check for `poster_path` with placeholder
+    - Fixed imports
+
+2. **SearchField.kt**
+    - Removed internal ViewModel instance
+    - Added `query` and `onQueryChange` parameters
+    - Component now acts as a controlled input
+
+3. **SearchApi.kt**
+    - Fixed endpoint path from `/search/movie` to `search/movie`
+
+4. **Result.kt** (data model)
+    - Made `poster_path` and `backdrop_path` nullable (`String?`)
+
+5. **MovieScreen.kt**
+    - Added click debouncing with `isNavigating` state
+    - Added coroutine scope for delay management
+    - Disabled button during navigation to prevent rapid clicks
+    - Added 500ms cooldown between navigation events
+
+6. **All Search & Movie Module Files**
+    - Fixed package import paths after project restructuring
+    - Removed `app.` prefix from package names
+    - Updated: SearchApi, SearchViewModel, SearchUiState, SearchRepository, MovieViewModel,
+      MovieUiState, MovieRepository, and all related files
+
+#### How It Works Now
+
+1. User types in SearchField
+2. Query state updates immediately (instant UI feedback)
+3. LaunchedEffect waits 500ms (debounce)
+4. If query is not empty, calls `searchViewModel.searchMovie(query)`
+5. While loading, shows CircularProgressIndicator
+6. When results arrive:
+    - If empty: Shows "No results found" message
+    - If not empty: Displays movie list with images and details
+7. If user clears search: Shows "Search for a movie!" prompt
+8. Back button navigation is protected against rapid clicks
+
+#### UI States
+
+- **Empty**: Query is empty → "Search for a movie!"
+- **Loading**: `isLoading = true` → CircularProgressIndicator
+- **No Results**: `isLoading = false` && results empty → "No results found"
+- **Has Results**: `isLoading = false` && results not empty → Movie list
+
+#### Testing Recommendations
+
+1. Test with various search queries
+2. Verify debouncing works (API not called on every keystroke)
+3. Check loading state appears briefly
+4. Verify "No results found" shows for invalid queries
+5. Test with movies that have no poster images
+6. Clear search and verify empty state returns
+7. Test back button by clicking multiple times rapidly
+8. Verify no white screen appears during navigation
+
+---
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.

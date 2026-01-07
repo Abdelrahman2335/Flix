@@ -1,0 +1,33 @@
+package com.example.flix.home.presentation.view.screen
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.example.flix.home.presentation.view.component.Appbar
+import com.example.flix.home.presentation.view.component.HomeScreenContent
+
+@Composable
+fun HomeScreen(
+    onMovieClick: (Int) -> Unit,
+    onSearchClick: () -> Unit
+) {
+    // Create ViewModel using Hilt - this will be the single instance
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
+
+        topBar = { Appbar({ onSearchClick() }) },
+
+        ) { innerPadding ->
+        HomeScreenContent(
+            modifier = Modifier.padding(innerPadding),
+            onMovieClick = onMovieClick,
+        )
+
+    }
+}
+
+
+
