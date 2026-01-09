@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -26,15 +27,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.flix.core.util.HelperMethod
 import com.example.flix.core.util.LanguageMapper
-import com.example.flix.core.util.getImageUrl
 import com.example.flix.home.presentation.view_model.HomeViewModel
+import com.example.flix.movie.presentation.event.MovieUiEvent
+import com.example.flix.movie.presentation.view_model.MovieViewModel
 
 @Composable
 fun MovieCard(
@@ -43,8 +47,13 @@ fun MovieCard(
 ) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val uiState by homeViewModel.uiState.collectAsState()
+    val movieViewModel = hiltViewModel<MovieViewModel>()
 
+    val uiMovieState by movieViewModel.uiState.collectAsState()
+
+    val helperMethod = HelperMethod()
     val movie = uiState.popularMovies[count]
+    val context = LocalContext.current
 
 
     Box(
@@ -56,7 +65,7 @@ fun MovieCard(
     ) {
 
         AsyncImage(
-            model = getImageUrl(movie.posterPath),
+            model = helperMethod.getImageUrl(movie.posterPath),
             contentDescription = movie.title,
             modifier = Modifier
                 .width(350.dp)
@@ -119,23 +128,30 @@ fun MovieCard(
                 color = Color.White,
                 fontSize = 12.sp,
             )
-            IconButton(
-                colors = IconButtonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.Red,
-                    disabledContainerColor = Color.White,
-                    disabledContentColor = Color.White,
-                ),
-                shape = CircleShape,
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    tint = Color.White,
-                    contentDescription = "Play"
+            if (uiMovieState.isLoadingTrailer) {
+                CircularProgressIndicator(color = Color.Red)
+            } else {
+                IconButton(
+                    colors = IconButtonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.Red,
+                        disabledContainerColor = Color.White,
+                        disabledContentColor = Color.White,
+                    ),
+                    shape = CircleShape,
+                    onClick = {
+                        movieViewModel.onEvent(MovieUiEvent.GetVideos(movie.id, context, true))
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        tint = Color.White,
+                        contentDescription = "Play"
 
-                )
+                    )
+                }
             }
+
 
         }
     }

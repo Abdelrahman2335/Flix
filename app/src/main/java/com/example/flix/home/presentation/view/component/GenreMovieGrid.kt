@@ -19,13 +19,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.flix.core.util.getImageUrl
+import com.example.flix.core.util.HelperMethod
 import com.example.flix.home.data.model.PopularMovie
 
 @Composable
 fun GenreMovieGrid(popularMovie: PopularMovie, onMovieClick: (Int) -> Unit) {
 
-
+    val helperMethod = HelperMethod()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -34,7 +34,7 @@ fun GenreMovieGrid(popularMovie: PopularMovie, onMovieClick: (Int) -> Unit) {
 
     ) {
         AsyncImage(
-            model = getImageUrl(popularMovie.posterPath),
+            model = helperMethod.getImageUrl(popularMovie.posterPath),
             contentDescription = popularMovie.title,
             modifier = Modifier
                 .height(217.dp)

@@ -6,6 +6,6 @@ import com.example.flix.movie.data.model.movie_media.MovieMediaResponse
 
 interface MovieRepository {
     suspend fun getMovieDetails(id: Int): MovieModel
-    suspend fun getMovieTrailer(id: Int): MovieMediaResponse
     suspend fun getCast(id: Int): CastResponse
+    suspend fun getMovieVideos(movieId: Int): MovieMediaResponse
 }

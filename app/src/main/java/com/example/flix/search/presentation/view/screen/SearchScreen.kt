@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.flix.core.util.getImageUrl
+import com.example.flix.core.util.HelperMethod
 import com.example.flix.search.presentation.event.SearchUiEvent
 import com.example.flix.search.presentation.view.component.SearchField
 import com.example.flix.search.presentation.view_model.SearchViewModel
@@ -38,6 +38,7 @@ import com.example.flix.search.presentation.view_model.SearchViewModel
 fun SearchScreen(
     onMovieClick: (Int) -> Unit
 ) {
+    val helperMethod = HelperMethod()
 
     val searchViewModel = hiltViewModel<SearchViewModel>()
     val uiState by searchViewModel.uiState.collectAsState()
@@ -125,7 +126,7 @@ fun SearchScreen(
                 }
             }
             // Display results
-            else if (uiState.searchResults.isNotEmpty()) {
+            else {
                 items(uiState.searchResults.size) { count ->
                     val movie = uiState.searchResults[count]
                     Row(
@@ -143,7 +144,7 @@ fun SearchScreen(
                         ) {
                             if (movie.poster_path != null) {
                                 AsyncImage(
-                                    model = getImageUrl(movie.poster_path),
+                                    model = helperMethod.getImageUrl(movie.poster_path),
                                     contentDescription = "Movie Image"
                                 )
                             } else {

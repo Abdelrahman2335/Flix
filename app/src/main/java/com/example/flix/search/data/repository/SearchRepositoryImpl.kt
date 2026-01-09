@@ -9,6 +9,6 @@ class SearchRepositoryImpl @Inject constructor(
     private val searchApi: SearchApi
 ) : SearchRepository {
     override suspend fun searchMovie(query: String): SearchModel {
-        return searchApi.SearchMovie(query)
+        return searchApi.searchMovie(query)
     }
 }

@@ -16,12 +16,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.flix.core.util.getImageUrl
+import com.example.flix.core.util.HelperMethod
 import com.example.flix.movie.data.model.cast.Cast
 
 
 @Composable
 fun CastSection(cast: List<Cast>) {
+    val helperMethod = HelperMethod()
     LazyRow {
         items(cast.size) { count ->
 
@@ -35,7 +36,7 @@ fun CastSection(cast: List<Cast>) {
             ) {
                 AsyncImage(
                     modifier = Modifier.size(120.dp),
-                    model = getImageUrl(actor.profilePath),
+                    model = helperMethod.getImageUrl(actor.profilePath),
                     contentDescription = actor.name,
                     contentScale = ContentScale.Crop
                 )

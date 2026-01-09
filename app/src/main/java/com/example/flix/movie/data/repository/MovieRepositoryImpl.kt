@@ -7,17 +7,18 @@ import com.example.flix.movie.data.model.movie_media.MovieMediaResponse
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
-    private val movieDetailsApi: MovieDetailsApi
+    private val movieDetailsApi: MovieDetailsApi,
 ) : MovieRepository {
     override suspend fun getMovieDetails(id: Int): MovieModel {
         return movieDetailsApi.getMovie(id)
     }
 
-    override suspend fun getMovieTrailer(id: Int): MovieMediaResponse {
-        return movieDetailsApi.getTrailer(id)
-    }
 
     override suspend fun getCast(id: Int): CastResponse {
         return movieDetailsApi.getCast(id)
+    }
+
+    override suspend fun getMovieVideos(movieId: Int): MovieMediaResponse {
+        return movieDetailsApi.getVideos(movieId)
     }
 }
