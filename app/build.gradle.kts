@@ -13,6 +13,11 @@ android {
     namespace = "com.example.flix"
     compileSdk = 36
 
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
     defaultConfig {
         applicationId = "com.example.flix"
         minSdk = 24
@@ -55,10 +60,21 @@ android {
     }
 }
 
-dependencies {
+// Force compatible metadata parser for annotation processors.
+configurations.configureEach {
+    resolutionStrategy.force("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0")
+}
 
+dependencies {
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine) // For testing Flows
+    testImplementation(libs.mockk) // For mocking
+    testImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.hilt.android.testing)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    kapt(libs.kotlinx.metadata.jvm)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
@@ -89,4 +105,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation(kotlin("test"))
 }

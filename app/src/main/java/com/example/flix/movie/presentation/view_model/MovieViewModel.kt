@@ -76,7 +76,6 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-
     private suspend fun getMovie(movieId: Int) {
         Log.d("MovieViewModel", "Starting to get Movie: $movieId")
         try {

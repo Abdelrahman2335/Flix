@@ -1,4 +1,4 @@
-package com.example.flix.home.di
+package com.example.flix.home.data.di
 
 import com.example.flix.home.data.repository.HomeRepository
 import com.example.flix.home.data.repository.HomeRepositoryImpl

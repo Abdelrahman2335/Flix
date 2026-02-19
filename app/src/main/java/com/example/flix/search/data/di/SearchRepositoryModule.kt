@@ -1,4 +1,4 @@
-package com.example.flix.search.di
+package com.example.flix.search.data.di
 
 import com.example.flix.search.data.repository.SearchRepository
 import com.example.flix.search.data.repository.SearchRepositoryImpl

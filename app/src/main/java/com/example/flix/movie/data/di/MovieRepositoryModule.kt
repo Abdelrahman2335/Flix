@@ -1,4 +1,4 @@
-package com.example.flix.movie.di
+package com.example.flix.movie.data.di
 
 import com.example.flix.movie.data.repository.MovieRepository
 import com.example.flix.movie.data.repository.MovieRepositoryImpl
