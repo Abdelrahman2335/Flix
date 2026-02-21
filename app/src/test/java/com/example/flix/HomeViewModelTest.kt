@@ -10,13 +10,8 @@ import com.example.flix.home.presentation.event.HomeUiEvent
 import com.example.flix.home.presentation.view_model.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -25,22 +20,17 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeViewModelTest {
+class HomeViewModelTest : BaseViewModelTest() {
 
     private lateinit var repository: HomeRepository
     private lateinit var viewModel: HomeViewModel
-    private val testDispatcher = StandardTestDispatcher()
 
     @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
+    override fun setup() {
+        super.setup()
         repository = mockk()
     }
 
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     @Test
     fun `when ViewModel initializes, should load genres and movies successfully`() = runTest {
@@ -130,7 +120,7 @@ class HomeViewModelTest {
 
             // Should HAVE an error (this is an error test)
             assertNotNull(state.error)
-            assertTrue(state.error!!.contains("Network error"))
+            assertTrue(state.error.contains("Network error"))
 
             // Should have NO movies (because loading failed)
             assertTrue(state.popularMovies.isEmpty())
