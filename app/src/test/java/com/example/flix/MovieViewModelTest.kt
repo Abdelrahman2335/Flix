@@ -130,8 +130,8 @@ class MovieViewModelTest : BaseViewModelTest() {
                 assertFalse(state.isLoading)
                 assertEquals(null, state.error)
                 assertNotNull(state.movie)
-                assertEquals("Fake Movie", state.movie?.title)
-                assertEquals(7.5, state.movie?.voteAverage)
+                assertEquals("Fake Movie", state.movie.title)
+                assertEquals(7.5, state.movie.voteAverage)
                 assertEquals(emptyList(), state.cast)
                 assertEquals("dQw4w9WgXcQ", state.trailerKey)
             }
@@ -156,7 +156,7 @@ class MovieViewModelTest : BaseViewModelTest() {
 
             assertFalse(state.isLoading)
             assertNotNull(state.error)
-            assert(state.error!!.contains("Failed to load data") || state.error!!.contains("Network error"))
+            assert(state.error.contains("Failed to load data") || state.error.contains("Network error"))
         }
     }
 }
